@@ -9,55 +9,56 @@
     <link rel="stylesheet" href="../styles.css" />
   </head>
   <body>
-    <main class="shell split-shell">
-      <nav class="site-nav" aria-label="เมนูหลัก">
-        <a class="brand" href="../">เสียงเล็ก</a>
-        <div class="nav-links"><a class="nav-link" href="../transcribe/">ถอดเสียงด้วย AI</a><a class="nav-link" href="../">← กลับไปบีบเสียง</a></div>
+    <main class="shell split-shell" data-page="split">
+      <nav class="site-nav" data-i18n-aria-label="common.mainNav">
+        <a class="brand" href="../" data-i18n="common.brand">เสียงเล็ก</a>
+        <div class="nav-links"><a class="nav-link" href="../transcribe/" data-i18n="common.transcribe">ถอดเสียงด้วย AI</a><a class="nav-link" href="../" data-i18n="common.backCompress">← กลับไปบีบเสียง</a><button id="language-toggle" class="language-toggle" type="button">English</button></div>
       </nav>
       <header class="split-hero">
         <div>
-          <p class="eyebrow">LOCAL AUDIO SPLITTER</p>
-          <h1>แบ่งไฟล์ใหญ่<br /><span>เป็นส่วนพอดี</span></h1>
-          <p class="intro">เลือกจำนวนไฟล์ที่ต้องการ แล้วดาวน์โหลดแต่ละส่วนได้ทันที ทุกอย่างทำงานในเบราว์เซอร์ของคุณ</p>
+          <p class="eyebrow" data-i18n="split.eyebrow">LOCAL AUDIO SPLITTER</p>
+          <h1><span data-i18n="split.heroTitleA">แบ่งไฟล์ใหญ่</span><br /><span data-i18n="split.heroTitleB">เป็นส่วนพอดี</span></h1>
+          <p class="intro" data-i18n="split.heroIntro">เลือกจำนวนไฟล์ที่ต้องการ แล้วดาวน์โหลดแต่ละส่วนได้ทันที ทุกอย่างทำงานในเบราว์เซอร์ของคุณ</p>
         </div>
         <div class="split-art" aria-hidden="true"><i></i><i></i><i></i><b>♪</b></div>
       </header>
 
       <section class="workbench" aria-labelledby="split-title">
         <div class="section-heading">
-          <div><p class="step">01 — เลือกไฟล์</p><h2 id="split-title">ไฟล์เสียงต้นฉบับ</h2></div>
-          <span class="local-badge"><i></i> อยู่ในอุปกรณ์นี้เท่านั้น</span>
+          <div><p class="step" data-i18n="split.stepFile">01 — เลือกไฟล์</p><h2 id="split-title" data-i18n="split.sourceTitle">ไฟล์เสียงต้นฉบับ</h2></div>
+          <span class="local-badge"><i></i> <span data-i18n="common.localOnly">อยู่ในอุปกรณ์นี้เท่านั้น</span></span>
         </div>
         <label id="split-drop-zone" class="drop-zone" for="split-file">
           <input id="split-file" type="file" accept="audio/*,.m4a,.mp3,.wav,.aac,.ogg,.webm" />
           <span class="drop-icon" aria-hidden="true">⇧</span>
-          <strong>เลือกไฟล์เสียง หรือลากมาวางที่นี่</strong>
-          <span>รองรับ M4A, MP3, WAV, AAC, OGG และ WebM</span>
+          <strong data-i18n="common.chooseFile">เลือกไฟล์เสียง หรือลากมาวางที่นี่</strong>
+          <span data-i18n="common.audioTypesWebm">รองรับ M4A, MP3, WAV, AAC, OGG และ WebM</span>
         </label>
         <div id="split-file-card" class="file-card" hidden>
           <div class="file-mark">♪</div>
           <div class="file-info"><strong id="split-file-name"></strong><span id="split-file-info"></span></div>
-          <button id="clear-split-file" type="button" class="text-button">เปลี่ยนไฟล์</button>
+          <button id="clear-split-file" type="button" class="text-button" data-i18n="common.changeFile">เปลี่ยนไฟล์</button>
         </div>
 
         <div id="split-settings" class="split-settings" hidden>
-          <div><p class="step">02 — กำหนดจำนวน</p><h2>ต้องการแบ่งกี่ไฟล์</h2><p id="split-estimate">กำลังอ่านความยาวไฟล์…</p></div>
-          <label class="parts-control" for="parts-count"><span>จำนวนส่วน</span><input id="parts-count" type="number" min="2" max="50" value="12" inputmode="numeric" /><small>2–50 ไฟล์</small></label>
+          <div><p class="step" data-i18n="split.stepCount">02 — กำหนดจำนวน</p><h2 data-i18n="split.countTitle">ต้องการแบ่งกี่ไฟล์</h2><p id="split-estimate" data-i18n="split.loadingDuration">กำลังอ่านความยาวไฟล์…</p></div>
+          <label class="parts-control" for="parts-count"><span data-i18n="split.countLabel">จำนวนส่วน</span><input id="parts-count" type="number" min="2" max="50" value="12" inputmode="numeric" /><small data-i18n="split.countHint">2–50 ไฟล์</small></label>
         </div>
-        <button id="split-button" type="button" class="primary-button" disabled><span>แบ่งไฟล์เสียง</span><b>→</b></button>
+        <button id="split-button" type="button" class="primary-button" disabled><span data-i18n="split.splitButton">แบ่งไฟล์เสียง</span><b>→</b></button>
         <div id="split-status" class="status-panel" hidden aria-live="polite">
-          <div class="status-line"><span id="split-status-text">กำลังเตรียมตัวเข้ารหัส…</span><span id="split-status-percent">0%</span></div>
+          <div class="status-line"><span id="split-status-text" data-i18n="split.statusPreparing">กำลังเตรียมไฟล์…</span><span id="split-status-percent">0%</span></div>
           <div class="progress-track"><div id="split-progress-bar"></div></div>
-          <p id="split-status-note">ครั้งแรกจะโหลดตัวประมวลผลประมาณ 31 MB เพียงครั้งเดียว</p>
+          <p id="split-status-note" data-i18n="common.firstLoadNote">ครั้งแรกจะโหลดตัวประมวลผลประมาณ 31 MB เพียงครั้งเดียว</p>
         </div>
         <div id="split-results" class="split-results" hidden>
-          <div class="result-heading"><div><p class="step">เสร็จแล้ว</p><h2 id="split-results-title">ไฟล์ที่แบ่งแล้ว</h2></div><div class="result-actions"><button id="download-all-splits" type="button" class="download-all-button">ดาวน์โหลดทั้งหมด .zip</button><button id="clear-split-results" type="button" class="secondary-button">ล้างไฟล์ผลลัพธ์</button></div></div>
+          <div class="result-heading"><div><p class="step" data-i18n="common.done">เสร็จแล้ว</p><h2 id="split-results-title" data-i18n="split.resultsTitle">ไฟล์ที่แบ่งแล้ว</h2></div><div class="result-actions"><button id="download-all-splits" type="button" class="download-all-button" data-i18n="split.downloadAll">ดาวน์โหลดทั้งหมด .zip</button><button id="clear-split-results" type="button" class="secondary-button" data-i18n="split.clearResults">ล้างไฟล์ผลลัพธ์</button></div></div>
           <div id="split-results-list" class="split-results-list"></div>
         </div>
         <p id="split-error" class="error-message" role="alert" hidden></p>
       </section>
-      <aside class="privacy-note"><span>ความเป็นส่วนตัว</span><p>ไฟล์ไม่ถูกอัปโหลด ไม่มีฐานข้อมูล และไม่มีพื้นที่เก็บไฟล์บนเซิร์ฟเวอร์ หากต้องการส่งไปถอดเสียง ให้เลือกจำนวนส่วนที่ทำให้แต่ละไฟล์ต่ำกว่า 4 MB.</p></aside>
+      <aside class="privacy-note"><span data-i18n="common.privacy">ความเป็นส่วนตัว</span><p data-i18n="split.privacy">ไฟล์ไม่ถูกอัปโหลด ไม่มีฐานข้อมูล และไม่มีพื้นที่เก็บไฟล์บนเซิร์ฟเวอร์ หากต้องการส่งไปถอดเสียง ให้เลือกจำนวนส่วนที่ทำให้แต่ละไฟล์ต่ำกว่า 4 MB.</p></aside>
     </main>
+    <script src="../i18n.js"></script>
     <script type="module" src="./split.js"></script>
   </body>
 </html>

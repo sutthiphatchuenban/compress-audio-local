@@ -9,56 +9,57 @@
     <link rel="stylesheet" href="../styles.css" />
   </head>
   <body>
-    <main class="shell transcript-shell">
-      <nav class="site-nav" aria-label="เมนูหลัก">
-        <a class="brand" href="../">เสียงเล็ก</a>
-        <div class="nav-links"><a class="nav-link" href="../split/">แบ่งไฟล์</a><a class="nav-link" href="../">← กลับไปบีบเสียง</a></div>
+    <main class="shell transcript-shell" data-page="transcribe">
+      <nav class="site-nav" data-i18n-aria-label="common.mainNav">
+        <a class="brand" href="../" data-i18n="common.brand">เสียงเล็ก</a>
+        <div class="nav-links"><a class="nav-link" href="../split/" data-i18n="common.split">แบ่งไฟล์</a><a class="nav-link" href="../" data-i18n="common.backCompress">← กลับไปบีบเสียง</a><button id="language-toggle" class="language-toggle" type="button">English</button></div>
       </nav>
       <header class="transcript-hero">
         <div>
-          <p class="eyebrow">AI TRANSCRIPTION</p>
-          <h1>เปลี่ยนเสียงเป็น<br /><span>ข้อความพร้อมใช้</span></h1>
-          <p class="intro">อัปโหลดไฟล์เสียงขนาดไม่เกิน 4 MB แล้วรับข้อความถอดเสียงทันที</p>
+          <p class="eyebrow" data-i18n="transcribe.eyebrow">AI TRANSCRIPTION</p>
+          <h1><span data-i18n="transcribe.heroTitleA">เปลี่ยนเสียงเป็น</span><br /><span data-i18n="transcribe.heroTitleB">ข้อความพร้อมใช้</span></h1>
+          <p class="intro" data-i18n="transcribe.heroIntro">อัปโหลดไฟล์เสียงขนาดไม่เกิน 4 MB แล้วรับข้อความถอดเสียงทันที</p>
         </div>
         <div class="transcript-orb" aria-hidden="true"><span>⌁</span><i></i><b></b></div>
       </header>
       <section class="workbench" aria-labelledby="transcribe-title">
         <div class="section-heading">
-          <div><p class="step">01 — เลือกไฟล์</p><h2 id="transcribe-title">ไฟล์เสียงสำหรับถอดเสียง</h2></div>
-          <span class="limit-badge">สูงสุด 4 MB</span>
+          <div><p class="step" data-i18n="transcribe.stepFile">01 — เลือกไฟล์</p><h2 id="transcribe-title" data-i18n="transcribe.sourceTitle">ไฟล์เสียงสำหรับถอดเสียง</h2></div>
+          <span class="limit-badge" data-i18n="transcribe.limit">สูงสุด 4 MB</span>
         </div>
         <label id="transcribe-drop-zone" class="drop-zone" for="transcribe-file">
           <input id="transcribe-file" type="file" accept="audio/*,.m4a,.mp3,.wav,.aac,.ogg,.webm" />
           <span class="drop-icon" aria-hidden="true">⇧</span>
-          <strong>เลือกไฟล์เสียง หรือลากมาวางที่นี่</strong>
-          <span>รองรับ M4A, MP3, WAV, AAC, OGG และ WebM · ไม่เกิน 4 MB</span>
+          <strong data-i18n="common.chooseFile">เลือกไฟล์เสียง หรือลากมาวางที่นี่</strong>
+          <span data-i18n="transcribe.types">รองรับ M4A, MP3, WAV, AAC, OGG และ WebM · ไม่เกิน 4 MB</span>
         </label>
         <div id="transcribe-file-card" class="file-card" hidden>
           <div class="file-mark">♪</div>
           <div class="file-info"><strong id="transcribe-file-name"></strong><span id="transcribe-file-size"></span></div>
-          <button id="clear-transcribe-file" type="button" class="text-button">เปลี่ยนไฟล์</button>
+          <button id="clear-transcribe-file" type="button" class="text-button" data-i18n="common.changeFile">เปลี่ยนไฟล์</button>
         </div>
         <div class="transcript-options">
-          <div><p class="step">02 — เริ่มถอดเสียง</p><h2>อ่านข้อความจากไฟล์เสียง</h2></div>
-          <p>ระบบจะรักษาภาษาต้นฉบับของผู้พูด และจัดย่อหน้าให้อ่านง่าย</p>
+          <div><p class="step" data-i18n="transcribe.stepStart">02 — เริ่มถอดเสียง</p><h2 data-i18n="transcribe.optionsTitle">อ่านข้อความจากไฟล์เสียง</h2></div>
+          <p data-i18n="transcribe.optionsIntro">ระบบจะรักษาภาษาต้นฉบับของผู้พูด และจัดย่อหน้าให้อ่านง่าย</p>
         </div>
-        <button id="transcribe-button" type="button" class="primary-button" disabled><span>ถอดเสียงเป็นข้อความ</span><b>→</b></button>
+        <button id="transcribe-button" type="button" class="primary-button" disabled><span data-i18n="transcribe.button">ถอดเสียงเป็นข้อความ</span><b>→</b></button>
         <div id="transcribe-status" class="status-panel" hidden aria-live="polite">
-          <div class="status-line"><span id="transcribe-status-text">กำลังส่งไฟล์อย่างปลอดภัย…</span><span id="transcribe-status-percent">0%</span></div>
-          <div class="progress-track"><div id="transcribe-progress-bar" role="progressbar" aria-label="ความคืบหน้าการถอดเสียง" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div></div>
-          <p id="transcribe-status-note">ความคืบหน้าโดยประมาณระหว่างรอ AI ประมวลผล</p>
+          <div class="status-line"><span id="transcribe-status-text" data-i18n="transcribe.statusSending">กำลังส่งไฟล์เพื่อถอดเสียง…</span><span id="transcribe-status-percent">0%</span></div>
+          <div class="progress-track"><div id="transcribe-progress-bar" role="progressbar" data-i18n-aria-label="transcribe.progressLabel" aria-label="ความคืบหน้าการถอดเสียง" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div></div>
+          <p id="transcribe-status-note" data-i18n="transcribe.statusNote">ความคืบหน้าโดยประมาณ อย่าปิดหน้านี้จนกว่าจะได้ผลลัพธ์</p>
         </div>
         <div id="transcript-result" class="transcript-result" hidden>
           <div class="result-heading">
-            <div><p class="step">เสร็จแล้ว</p><h2>ข้อความถอดเสียง</h2></div>
-            <div class="result-actions"><button id="copy-transcript" type="button" class="secondary-button">คัดลอก</button><button id="download-transcript" type="button" class="secondary-button">ดาวน์โหลด .md</button></div>
+            <div><p class="step" data-i18n="common.done">เสร็จแล้ว</p><h2 data-i18n="transcribe.resultTitle">ข้อความถอดเสียง</h2></div>
+            <div class="result-actions"><button id="copy-transcript" type="button" class="secondary-button" data-i18n="transcribe.copy">คัดลอก</button><button id="download-transcript" type="button" class="secondary-button" data-i18n="transcribe.download">ดาวน์โหลด .md</button></div>
           </div>
           <pre id="transcript-text" tabindex="0"></pre>
         </div>
         <p id="transcribe-error" class="error-message" role="alert" hidden></p>
       </section>
-      <aside class="privacy-note remote-note"><span>ข้อมูลของคุณ</span><p>เว็บนี้ไม่มีฐานข้อมูลหรือพื้นที่เก็บไฟล์ ไฟล์ที่เลือกจะถูกส่งผ่าน Netlify ไปยัง AI ใน request เดียวเพื่อถอดเสียง ไฟล์ต้องไม่เกิน 4 MB เพื่อให้ส่งผ่านฟังก์ชันได้อย่างเสถียร</p></aside>
+      <aside class="privacy-note remote-note"><span data-i18n="transcribe.dataTitle">ข้อมูลของคุณ</span><p data-i18n="transcribe.privacy">เว็บนี้ไม่มีฐานข้อมูลหรือพื้นที่เก็บไฟล์ ไฟล์ที่เลือกจะถูกส่งผ่าน Netlify ไปยัง AI ใน request เดียวเพื่อถอดเสียง ไฟล์ต้องไม่เกิน 4 MB เพื่อให้ส่งผ่านฟังก์ชันได้อย่างเสถียร</p></aside>
     </main>
+    <script src="../i18n.js"></script>
     <script type="module" src="./transcribe.js"></script>
   </body>
 </html>

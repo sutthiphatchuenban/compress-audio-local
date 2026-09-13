@@ -1,4 +1,5 @@
 const MAX_FILE_BYTES = 4 * 1024 * 1024;
+const t = (key, values) => window.AudioI18n.t(key, values);
 const fileInput = document.querySelector('#transcribe-file');
 const dropZone = document.querySelector('#transcribe-drop-zone');
 const fileCard = document.querySelector('#transcribe-file-card');
@@ -26,9 +27,9 @@ function resetFile() { selectedFile = null; fileInput.value = ''; fileCard.hidde
 function selectFile(file) {
   clearError(); result.hidden = true;
   if (!file) return;
-  if (file.size === 0) { resetFile(); showError('ไฟล์นี้ว่างเปล่า กรุณาเลือกไฟล์เสียงอื่น'); return; }
-  if (file.size > MAX_FILE_BYTES) { resetFile(); showError(`ไฟล์ ${formatBytes(file.size)} ใหญ่เกินขีดจำกัด 4 MB กรุณาบีบอัดหรือตัดไฟล์ให้เล็กลงก่อน`); return; }
-  selectedFile = file; fileName.textContent = file.name; fileSize.textContent = `${formatBytes(file.size)} · พร้อมถอดเสียง`; fileCard.hidden = false; transcribeButton.disabled = false;
+  if (file.size === 0) { resetFile(); showError(t('transcribe.emptyFile')); return; }
+  if (file.size > MAX_FILE_BYTES) { resetFile(); showError(t('transcribe.tooLarge', { size: formatBytes(file.size) })); return; }
+  selectedFile = file; fileName.textContent = file.name; fileSize.textContent = `${formatBytes(file.size)} · ${t('transcribe.ready')}`; fileCard.hidden = false; transcribeButton.disabled = false;
 }
 fileInput.addEventListener('change', () => selectFile(fileInput.files[0]));
 clearButton.addEventListener('click', resetFile);
@@ -37,27 +38,31 @@ clearButton.addEventListener('click', resetFile);
 dropZone.addEventListener('drop', (event) => selectFile(event.dataTransfer.files[0]));
 transcribeButton.addEventListener('click', async () => {
   if (!selectedFile) return;
-  clearError(); result.hidden = true; statusPanel.hidden = false; setProgress(8, 'กำลังส่งไฟล์เพื่อถอดเสียง…'); statusNote.textContent = 'ความคืบหน้าโดยประมาณ อย่าปิดหน้านี้จนกว่าจะได้ผลลัพธ์'; transcribeButton.disabled = true;
+  clearError(); result.hidden = true; statusPanel.hidden = false; setProgress(8, t('transcribe.statusSending')); statusNote.textContent = t('transcribe.statusNote'); transcribeButton.disabled = true;
   let progress = 8;
-  const progressTimer = window.setInterval(() => { progress = Math.min(90, progress + (progress < 40 ? 8 : 3)); setProgress(progress, progress < 40 ? 'กำลังส่งไฟล์ไปยัง AI…' : 'AI กำลังถอดเสียง…'); }, 900);
+  const progressTimer = window.setInterval(() => { progress = Math.min(90, progress + (progress < 40 ? 8 : 3)); setProgress(progress, progress < 40 ? t('transcribe.statusSendingAi') : t('transcribe.statusAi')); }, 900);
   try {
     const data = new FormData(); data.append('audio', selectedFile, selectedFile.name);
     const response = await fetch('/.netlify/functions/transcribe', { method: 'POST', body: data });
     const payload = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(payload.error || 'ไม่สามารถถอดเสียงได้ในขณะนี้');
-    if (!payload.text) throw new Error('ไม่ได้รับข้อความถอดเสียงจากบริการ');
-    window.clearInterval(progressTimer); setProgress(100, 'ถอดเสียงเสร็จแล้ว'); transcriptText.textContent = payload.text.trim(); result.hidden = false; result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  } catch (error) { showError(error.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
+    if (!response.ok) throw new Error(payload.error || t('transcribe.unavailable'));
+    if (!payload.text) throw new Error(t('transcribe.noText'));
+    window.clearInterval(progressTimer); setProgress(100, t('transcribe.statusDone')); transcriptText.textContent = payload.text.trim(); result.hidden = false; result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  } catch (error) { showError(error.message || t('transcribe.genericError'));
   } finally { window.clearInterval(progressTimer); statusPanel.hidden = true; transcribeButton.disabled = !selectedFile; }
 });
 copyButton.addEventListener('click', async () => {
   const originalLabel = copyButton.textContent;
-  try { await navigator.clipboard.writeText(transcriptText.textContent); copyButton.textContent = 'คัดลอกแล้ว'; }
-  catch { showError('คัดลอกไม่สำเร็จ กรุณาเลือกข้อความจากกล่องผลลัพธ์เอง'); }
+  try { await navigator.clipboard.writeText(transcriptText.textContent); copyButton.textContent = t('transcribe.copied'); }
+  catch { showError(t('transcribe.copyError')); }
   window.setTimeout(() => { copyButton.textContent = originalLabel; }, 1800);
 });
 downloadButton.addEventListener('click', () => {
-  const markdown = `# ถอดเสียง: ${selectedFile?.name || 'audio'}\n\n${transcriptText.textContent.trim()}\n`;
+  const markdown = `# ${t('transcribe.markdownTitle', { name: selectedFile?.name || 'audio' })}\n\n${transcriptText.textContent.trim()}\n`;
   const url = URL.createObjectURL(new Blob([markdown], { type: 'text/markdown;charset=utf-8' }));
   const link = document.createElement('a'); link.href = url; link.download = `${(selectedFile?.name || 'transcript').replace(/\.[^.]+$/, '')}-transcript.md`; link.click(); URL.revokeObjectURL(url);
+});
+
+window.addEventListener('audio-tools-language-change', () => {
+  if (selectedFile) fileSize.textContent = `${formatBytes(selectedFile.size)} · ${t('transcribe.ready')}`;
 });

@@ -1,4 +1,5 @@
 const CORE_URL = "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/umd";
+const t = (key, values) => window.AudioI18n.t(key, values);
 const elements = {
   input: document.querySelector("#audio-file"),
   dropZone: document.querySelector("#drop-zone"),
@@ -23,6 +24,8 @@ let selectedFile = null;
 let ffmpeg = null;
 let compressorReady = false;
 let resultUrl = null;
+let lastOutputBytes = 0;
+let lastReduction = 0;
 
 const toBlobURL = async (url, mimeType) => {
   const response = await fetch(url);
@@ -110,13 +113,15 @@ const showError = (message = "") => {
 const resetResult = () => {
   if (resultUrl) URL.revokeObjectURL(resultUrl);
   resultUrl = null;
+  lastOutputBytes = 0;
+  lastReduction = 0;
   elements.result.hidden = true;
 };
 
 const setFile = (file) => {
   if (!file) return;
   if (!file.type.startsWith("audio/") && !/\.(m4a|mp3|wav|aac|ogg)$/i.test(file.name)) {
-    showError("กรุณาเลือกไฟล์เสียง เช่น M4A, MP3, WAV, AAC หรือ OGG");
+    showError(t("common.selectAudioError"));
     return;
   }
   selectedFile = file;
@@ -141,7 +146,7 @@ const clearFile = () => {
 const loadCompressor = async () => {
   if (compressorReady) return;
   ffmpeg = new FFmpegClient();
-  ffmpeg.on("progress", ({ progress }) => setProgress(progress, "กำลังบีบอัดไฟล์เสียง…"));
+  ffmpeg.on("progress", ({ progress }) => setProgress(progress, t("compressor.compressing")));
   await ffmpeg.load({
     coreURL: await toBlobURL(`${CORE_URL}/ffmpeg-core.js`, "text/javascript"),
     wasmURL: await toBlobURL(`${CORE_URL}/ffmpeg-core.wasm`, "application/wasm"),
@@ -160,14 +165,14 @@ const compressAudio = async () => {
   elements.statusPanel.hidden = false;
   elements.result.hidden = true;
   showError();
-  setProgress(0, compressorReady ? "กำลังเตรียมไฟล์…" : "กำลังโหลดตัวเข้ารหัสครั้งแรก…");
-  elements.statusNote.textContent = compressorReady ? "กำลังทำงานในเบราว์เซอร์ของคุณ" : "ตัวเข้ารหัสมีขนาดประมาณ 31 MB และจะถูกเก็บไว้ในแคชของเบราว์เซอร์";
+  setProgress(0, compressorReady ? t("common.preparing") : t("compressor.loadingEncoder"));
+  elements.statusNote.textContent = compressorReady ? t("common.browserProcessingNote") : t("common.firstLoadNote");
 
   const inputName = `input-${Date.now()}.${selectedFile.name.split(".").pop() || "m4a"}`;
   const outputName = compressedName(selectedFile.name);
   try {
     await loadCompressor();
-    setProgress(0, "กำลังอ่านไฟล์…");
+    setProgress(0, t("compressor.reading"));
     await ffmpeg.writeFile(inputName, new Uint8Array(await selectedFile.arrayBuffer()));
     await ffmpeg.exec([
       "-i", inputName,
@@ -184,7 +189,9 @@ const compressAudio = async () => {
     elements.download.href = resultUrl;
     elements.download.download = outputName;
     const reduction = Math.max(0, Math.round((1 - data.byteLength / selectedFile.size) * 100));
-    elements.resultSummary.textContent = `${formatBytes(selectedFile.size)} → ${formatBytes(data.byteLength)} · เล็กลง ${reduction}%`;
+    lastOutputBytes = data.byteLength;
+    lastReduction = reduction;
+    elements.resultSummary.textContent = t("compressor.resultSummary", { input: formatBytes(selectedFile.size), output: formatBytes(data.byteLength), reduction });
     elements.statusPanel.hidden = true;
     elements.result.hidden = false;
     await ffmpeg.deleteFile(inputName);
@@ -192,7 +199,7 @@ const compressAudio = async () => {
   } catch (error) {
     console.error(error);
     elements.statusPanel.hidden = true;
-    showError("ไม่สามารถบีบอัดไฟล์นี้ได้ ลองใช้เบราว์เซอร์ Chrome หรือ Edge เวอร์ชันล่าสุด และตรวจสอบว่าหน่วยความจำในเครื่องเพียงพอ");
+    showError(t("compressor.error"));
   } finally {
     elements.compress.disabled = false;
   }
@@ -211,11 +218,17 @@ elements.compress.addEventListener("click", compressAudio);
 }));
 elements.dropZone.addEventListener("drop", (event) => setFile(event.dataTransfer.files?.[0]));
 
+window.addEventListener("audio-tools-language-change", () => {
+  if (!elements.result.hidden && selectedFile && lastOutputBytes) {
+    elements.resultSummary.textContent = t("compressor.resultSummary", { input: formatBytes(selectedFile.size), output: formatBytes(lastOutputBytes), reduction: lastReduction });
+  }
+});
+
 if (document.modelContext?.registerTool) {
   void Promise.resolve(document.modelContext.registerTool({
     name: "stage_audio_compression",
-    title: "เลือกไฟล์เพื่อบีบอัด",
-    description: "เปิดตัวเลือกไฟล์เพื่อเตรียมบีบอัดไฟล์เสียงในอุปกรณ์นี้",
+    title: t("compressor.compressButton"),
+    description: t("compressor.heroIntro"),
     inputSchema: { type: "object", properties: {}, additionalProperties: false },
     annotations: { readOnlyHint: false, untrustedContentHint: true },
     execute: () => {
