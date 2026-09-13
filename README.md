@@ -29,7 +29,7 @@
 
 ### ถอดเสียงด้วย AI
 
-หน้า [`/transcribe/`](https://compress-audio-local-nisio.netlify.app/transcribe/) ส่งไฟล์เสียงไปยัง `gemini-flash-lite-latest` ผ่าน Netlify Function เพื่อคืนข้อความถอดเสียง พร้อมคัดลอกหรือดาวน์โหลดเป็น Markdown
+หน้า [`/transcribe/`](https://compress-audio-local-nisio.netlify.app/transcribe/) ส่งไฟล์เสียงไปยัง `gemini-flash-lite-latest` ผ่าน serverless function ของ Netlify หรือ Vercel เพื่อคืนข้อความถอดเสียง พร้อมคัดลอกหรือดาวน์โหลดเป็น Markdown
 
 - จำกัดไฟล์ที่ **4 MB** ทั้งที่หน้าเว็บและฝั่งฟังก์ชัน เพื่ออยู่ในขอบเขต payload ของ Netlify
 - แอปไม่มีฐานข้อมูลและไม่เก็บไฟล์เสียง แต่ไฟล์จะถูกส่งไปยัง Google Gemini ใน request เดียวเพื่อประมวลผล โดยไม่ใช้ Google Files API จึงไม่ใช่โหมด local-only
@@ -67,6 +67,17 @@
 
 > หน้า `/transcribe/` ต้อง deploy ผ่าน Git repository เพื่อให้ Netlify Function ทำงาน; Netlify Drop ใช้ได้เฉพาะตัวบีบเสียงแบบ static
 
+## Deploy บน Vercel
+
+โปรเจกต์นี้รองรับ Vercel แล้ว โดยมี `vercel.json` ตั้งให้เผยแพร่ `dist` และมี Vercel Function ที่ `/api/transcribe` หน้าเว็บจะเลือก endpoint ของ Netlify หรือ Vercel ให้อัตโนมัติตามโดเมน และมี fallback เมื่อ endpoint หลักตอบกลับ 404
+
+1. Import repository นี้ใน Vercel หรืออัปโหลดโฟลเดอร์โปรเจกต์
+2. ตรวจว่า Output Directory เป็น `dist` (ไฟล์ `vercel.json` ตั้งค่าไว้ให้แล้ว)
+3. ใน **Project Settings → Environment Variables** เพิ่ม `GEMINI_API_KEY` และ `GEMINI_API_KEY2` ตามต้องการ โดยตั้งค่าให้กับ Production/Preview ที่จะใช้งาน
+4. Deploy ใหม่ แล้วเปิด `/`, `/split/` และ `/transcribe/`
+
+หน้า compressor และ splitter ทำงานบนเครื่องผู้ใช้เหมือนเดิม ส่วนหน้า transcribe ใช้ Vercel Function และยังจำกัดไฟล์ 4 MB เพื่อให้ request เสถียร
+
 ## โครงสร้างโปรเจกต์
 
 ```text
@@ -84,10 +95,13 @@ docs/
   ui-preview.png          ภาพหน้าจอสำหรับ README
 netlify/
   functions/transcribe.mjs  ตัวกลางที่เก็บ Gemini API key ไว้ฝั่งเซิร์ฟเวอร์
+api/
+  transcribe.mjs          entry point สำหรับ Vercel Function ที่ใช้ handler เดียวกับ Netlify
+vercel.json               ตั้งค่า output directory และ Vercel Function
 ```
 
 ## ข้อควรรู้
 
 - ไฟล์ขนาดใหญ่ใช้หน่วยความจำของเบราว์เซอร์มากกว่าปกติ ควรปิดแท็บหรือแอปอื่นหากเครื่องช้า
 - หากรีเฟรชหรือปิดหน้าเว็บขณะทำงาน ต้องเริ่มใหม่ เพราะไม่มีการเก็บไฟล์หรือสถานะบนเซิร์ฟเวอร์
-- API key ต้องเก็บใน Netlify Environment Variables เท่านั้น และควรสร้าง key ใหม่หากเคยส่งคีย์ผ่านแชตหรือเผยแพร่ในที่สาธารณะ
+- API key ต้องเก็บใน Netlify หรือ Vercel Environment Variables เท่านั้น และควรสร้าง key ใหม่หากเคยส่งคีย์ผ่านแชตหรือเผยแพร่ในที่สาธารณะ

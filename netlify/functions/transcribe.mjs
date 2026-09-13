@@ -20,7 +20,7 @@ export default async function transcribe(request) {
   const contentType = request.headers.get('content-type') || '';
   if (!contentType.includes('multipart/form-data')) return json({ error: 'กรุณาส่งไฟล์เสียงแบบ form-data' }, 415);
   const apiKeys = [process.env.GEMINI_API_KEY, process.env.GEMINI_API_KEY2].filter(Boolean);
-  if (!apiKeys.length) return json({ error: 'ยังไม่ได้ตั้งค่า GEMINI_API_KEY หรือ GEMINI_API_KEY2 บน Netlify' }, 503);
+  if (!apiKeys.length) return json({ error: 'ยังไม่ได้ตั้งค่า GEMINI_API_KEY หรือ GEMINI_API_KEY2 ใน environment variables' }, 503);
   try {
     const formData = await request.formData(); const audio = formData.get('audio');
     if (!audio || typeof audio.arrayBuffer !== 'function') return json({ error: 'ไม่พบไฟล์เสียง' }, 400);

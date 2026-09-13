@@ -18,6 +18,9 @@ const errorMessage = document.querySelector('#transcribe-error');
 const copyButton = document.querySelector('#copy-transcript');
 const downloadButton = document.querySelector('#download-transcript');
 let selectedFile = null;
+const transcribeEndpoints = window.location.hostname.includes('netlify')
+  ? ['/.netlify/functions/transcribe', '/api/transcribe']
+  : ['/api/transcribe', '/.netlify/functions/transcribe'];
 
 function setProgress(value, message) { const percent = Math.max(0, Math.min(100, Math.round(value))); progressBar.style.width = `${percent}%`; progressBar.setAttribute('aria-valuenow', String(percent)); statusPercent.textContent = `${percent}%`; if (message) statusText.textContent = message; }
 function formatBytes(bytes) { return `${(bytes / 1024 / 1024).toFixed(bytes < 1024 * 1024 ? 2 : 1)} MB`; }
@@ -43,7 +46,11 @@ transcribeButton.addEventListener('click', async () => {
   const progressTimer = window.setInterval(() => { progress = Math.min(90, progress + (progress < 40 ? 8 : 3)); setProgress(progress, progress < 40 ? t('transcribe.statusSendingAi') : t('transcribe.statusAi')); }, 900);
   try {
     const data = new FormData(); data.append('audio', selectedFile, selectedFile.name);
-    const response = await fetch('/.netlify/functions/transcribe', { method: 'POST', body: data });
+    let response;
+    for (const endpoint of transcribeEndpoints) {
+      response = await fetch(endpoint, { method: 'POST', body: data });
+      if (response.status !== 404) break;
+    }
     const payload = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(payload.error || t('transcribe.unavailable'));
     if (!payload.text) throw new Error(t('transcribe.noText'));
