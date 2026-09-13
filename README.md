@@ -1,12 +1,26 @@
 # บีบเสียง
 
-เว็บบีบอัดเสียงแบบ local-first สำหรับไฟล์ M4A, MP3, WAV, AAC และ OGG — เลือกไฟล์ บีบอัด และดาวน์โหลดผลลัพธ์ได้ทันที โดยไม่มี API, ฐานข้อมูล หรือพื้นที่เก็บไฟล์บนเซิร์ฟเวอร์
+เว็บเครื่องมือเสียง 2 หน้า: บีบอัดเสียงแบบ local-first และถอดเสียงด้วย Google Gemini สำหรับไฟล์ขนาดเล็ก โดยไม่มีฐานข้อมูลหรือพื้นที่เก็บไฟล์ของแอป
 
 ## ลองใช้งาน
 
 <https://compress-audio-local-nisio.netlify.app/>
 
 ![หน้าจอเว็บบีบเสียง](docs/ui-preview.png)
+
+## เครื่องมือในเว็บ
+
+### บีบเสียง
+
+เลือกไฟล์ M4A, MP3, WAV, AAC หรือ OGG แล้วสร้าง M4A/AAC ที่เล็กลงในเบราว์เซอร์โดยตรง ไม่มีการอัปโหลดไฟล์
+
+### ถอดเสียงด้วย AI
+
+หน้า [`/transcribe/`](https://compress-audio-local-nisio.netlify.app/transcribe/) ส่งไฟล์เสียงไปยัง Google Gemini ผ่าน Netlify Function เพื่อคืนข้อความถอดเสียง พร้อมคัดลอกหรือดาวน์โหลดเป็น Markdown
+
+- จำกัดไฟล์ที่ **4 MB** ทั้งที่หน้าเว็บและฝั่งฟังก์ชัน เพื่ออยู่ในขอบเขต payload ของ Netlify
+- แอปไม่มีฐานข้อมูลและไม่เก็บไฟล์เสียง แต่ไฟล์จะถูกส่งไปยัง Google Gemini เพื่อประมวลผล จึงไม่ใช่โหมด local-only
+- จำกัดการเรียก API 3 ครั้งต่อนาทีต่อ IP เพื่อลดการใช้โควตาโดยไม่ตั้งใจ
 
 ## จุดเด่น
 
@@ -35,7 +49,10 @@
 
 1. Push โฟลเดอร์นี้ขึ้น GitHub
 2. สร้างไซต์ใหม่จาก repository ใน Netlify
-3. Netlify จะอ่าน `netlify.toml` และเผยแพร่โฟลเดอร์ `dist` อัตโนมัติ
+3. ใน **Project configuration → Environment variables** เพิ่มตัวแปรชื่อ `GEMINI_API_KEY` แล้วใส่ Google AI Studio API key (ห้ามใส่คีย์ไว้ในไฟล์หรือฝั่งเบราว์เซอร์)
+4. Netlify จะอ่าน `netlify.toml` เผยแพร่โฟลเดอร์ `dist` และ deploy ฟังก์ชันถอดเสียงอัตโนมัติ
+
+> หน้า `/transcribe/` ต้อง deploy ผ่าน Git repository เพื่อให้ Netlify Function ทำงาน; Netlify Drop ใช้ได้เฉพาะตัวบีบเสียงแบบ static
 
 ## โครงสร้างโปรเจกต์
 
@@ -44,14 +61,18 @@ dist/
   index.html              หน้าเว็บ
   app.js                  การเลือกไฟล์และสั่งบีบอัด
   ffmpeg-worker.js        Web Worker สำหรับตัวเข้ารหัส
+  transcribe/             หน้าถอดเสียงและโค้ดฝั่งเบราว์เซอร์
   assets/
     audio-compression-hero.png
     favicon.png
 docs/
   ui-preview.png          ภาพหน้าจอสำหรับ README
+netlify/
+  functions/transcribe.mjs  ตัวกลางที่เก็บ Gemini API key ไว้ฝั่งเซิร์ฟเวอร์
 ```
 
 ## ข้อควรรู้
 
 - ไฟล์ขนาดใหญ่ใช้หน่วยความจำของเบราว์เซอร์มากกว่าปกติ ควรปิดแท็บหรือแอปอื่นหากเครื่องช้า
 - หากรีเฟรชหรือปิดหน้าเว็บขณะทำงาน ต้องเริ่มใหม่ เพราะไม่มีการเก็บไฟล์หรือสถานะบนเซิร์ฟเวอร์
+- API key ต้องเก็บใน Netlify Environment Variables เท่านั้น และควรสร้าง key ใหม่หากเคยส่งคีย์ผ่านแชตหรือเผยแพร่ในที่สาธารณะ

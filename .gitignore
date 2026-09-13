@@ -4,3 +4,8 @@ Thumbs.db
 
 # Local development metadata
 .sites-runtime/
+
+# Credentials must only live in the hosting provider's environment settings
+.env
+.env.*
+!.env.example
