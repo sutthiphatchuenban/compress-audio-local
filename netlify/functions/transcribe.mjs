@@ -40,12 +40,12 @@ export default async function transcribe(request) {
     });
     const payload = await geminiResponse.json().catch(() => ({}));
     if (!geminiResponse.ok) {
-      const message = payload?.error?.message || `บริการ Gemini ตอบกลับด้วยสถานะ ${geminiResponse.status}`;
+      const message = payload?.error?.message || `บริการ AI ตอบกลับด้วยสถานะ ${geminiResponse.status}`;
       console.error('Gemini transcription failed', geminiResponse.status, message);
-      return json({ error: `Google Gemini: ${message}` }, 502);
+      return json({ error: `AI: ${message}` }, 502);
     }
     const text = getTranscript(payload);
-    if (!text) return json({ error: 'Google Gemini ไม่ได้คืนข้อความถอดเสียง ลองเลือกไฟล์ที่มีเสียงพูดชัดเจน' }, 502);
+    if (!text) return json({ error: 'AI ไม่ได้คืนข้อความถอดเสียง ลองเลือกไฟล์ที่มีเสียงพูดชัดเจน' }, 502);
     return json({ text });
   } catch (error) { console.error('Transcription request failed', error); return json({ error: error.message || 'ประมวลผลไฟล์ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง' }, 500); }
 }

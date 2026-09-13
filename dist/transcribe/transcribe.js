@@ -39,7 +39,7 @@ transcribeButton.addEventListener('click', async () => {
   if (!selectedFile) return;
   clearError(); result.hidden = true; statusPanel.hidden = false; setProgress(8, 'กำลังส่งไฟล์เพื่อถอดเสียง…'); statusNote.textContent = 'ความคืบหน้าโดยประมาณ อย่าปิดหน้านี้จนกว่าจะได้ผลลัพธ์'; transcribeButton.disabled = true;
   let progress = 8;
-  const progressTimer = window.setInterval(() => { progress = Math.min(90, progress + (progress < 40 ? 8 : 3)); setProgress(progress, progress < 40 ? 'กำลังส่งไฟล์ไปยัง Gemini…' : 'Gemini กำลังถอดเสียง…'); }, 900);
+  const progressTimer = window.setInterval(() => { progress = Math.min(90, progress + (progress < 40 ? 8 : 3)); setProgress(progress, progress < 40 ? 'กำลังส่งไฟล์ไปยัง AI…' : 'AI กำลังถอดเสียง…'); }, 900);
   try {
     const data = new FormData(); data.append('audio', selectedFile, selectedFile.name);
     const response = await fetch('/.netlify/functions/transcribe', { method: 'POST', body: data });
