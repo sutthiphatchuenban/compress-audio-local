@@ -10,6 +10,10 @@
         backCompress: '← กลับไปบีบเสียง',
         languageButton: 'English',
         languageLabel: 'เปลี่ยนภาษาเป็นภาษาอังกฤษ',
+        brandTagline: 'เครื่องมือเสียง',
+        mobileMenu: 'เปิด/ปิด เมนู',
+        badgeLocal: 'ในเครื่อง',
+        badgeAi: 'AI',
         localOnly: 'อยู่ในอุปกรณ์นี้เท่านั้น',
         chooseFile: 'เลือกไฟล์เสียง หรือลากมาวางที่นี่',
         changeFile: 'เปลี่ยนไฟล์',
@@ -132,7 +136,7 @@
     },
     en: {
       common: {
-        brand: 'เสียงเล็ก',
+        brand: 'AudioLite',
         mainNav: 'Main navigation',
         compress: 'Compress',
         split: 'Split audio',
@@ -140,6 +144,10 @@
         backCompress: '← Back to compressor',
         languageButton: 'ภาษาไทย',
         languageLabel: 'Switch language to Thai',
+        brandTagline: 'Audio Tools',
+        mobileMenu: 'Toggle menu',
+        badgeLocal: 'Local',
+        badgeAi: 'AI',
         localOnly: 'Stays on this device',
         chooseFile: 'Choose an audio file or drag it here',
         changeFile: 'Change file',
@@ -277,18 +285,119 @@
     document.querySelectorAll('[data-i18n]').forEach((node) => { node.textContent = t(node.dataset.i18n); });
     document.querySelectorAll('[data-i18n-aria-label]').forEach((node) => { node.setAttribute('aria-label', t(node.dataset.i18nAriaLabel)); });
     document.querySelectorAll('[data-i18n-title]').forEach((node) => { node.setAttribute('title', t(node.dataset.i18nTitle)); });
-    const page = document.body.dataset.page;
+    const page = document.querySelector('[data-page]')?.dataset.page || document.body.dataset.page;
     if (page) {
       document.title = t(`${page}.title`);
       const description = document.querySelector('meta[name="description"]');
       if (description) description.content = t(`${page}.description`);
     }
-    const button = document.querySelector('#language-toggle');
-    if (button) { button.textContent = t('common.languageButton'); button.setAttribute('aria-label', t('common.languageLabel')); }
+    // Update language dropdowns
+    document.querySelectorAll('.lang-dropdown').forEach((dropdown) => {
+      const btn = dropdown.querySelector('.lang-dropdown-btn');
+      const currentText = dropdown.querySelector('.current-lang-text');
+      if (currentText) {
+        currentText.textContent = language.toUpperCase();
+      }
+      if (btn) {
+        btn.setAttribute('aria-label', language === 'th' ? 'เปลี่ยนภาษา (ปัจจุบัน: ภาษาไทย)' : 'Change language (Current: English)');
+      }
+      dropdown.querySelectorAll('.lang-option').forEach((opt) => {
+        const isCurrent = opt.dataset.lang === language;
+        opt.classList.toggle('active', isCurrent);
+        opt.setAttribute('aria-selected', String(isCurrent));
+      });
+    });
+    document.querySelectorAll('.language-toggle, #language-toggle').forEach((button) => {
+      const label = button.querySelector('.lang-text');
+      if (label) {
+        label.textContent = t('common.languageButton');
+      } else {
+        button.textContent = t('common.languageButton');
+      }
+      button.setAttribute('aria-label', t('common.languageLabel'));
+    });
     window.dispatchEvent(new CustomEvent('audio-tools-language-change', { detail: language }));
   }
   function setLanguage(next) { if (!translations[next]) return; language = next; try { localStorage.setItem('audio-tools-language', language); } catch {} apply(); }
   window.AudioI18n = { t, get language() { return language; }, setLanguage, formatDuration(seconds) { const minutes = Math.floor(seconds / 60); const remainder = Math.round(seconds % 60); return t('common.minutesSeconds', { minutes, seconds: remainder }); } };
-  document.querySelector('#language-toggle')?.addEventListener('click', () => setLanguage(language === 'th' ? 'en' : 'th'));
+  
+  document.addEventListener('click', (e) => {
+    // 1. Language dropdown toggle
+    const dropdownBtn = e.target.closest('.lang-dropdown-btn');
+    if (dropdownBtn) {
+      const dropdown = dropdownBtn.closest('.lang-dropdown');
+      const menu = dropdown?.querySelector('.lang-dropdown-menu');
+      if (menu) {
+        const willOpen = menu.hidden;
+        document.querySelectorAll('.lang-dropdown-menu').forEach((m) => { m.hidden = true; });
+        document.querySelectorAll('.lang-dropdown-btn').forEach((b) => { b.setAttribute('aria-expanded', 'false'); });
+        
+        menu.hidden = !willOpen;
+        dropdownBtn.setAttribute('aria-expanded', String(willOpen));
+      }
+      return;
+    }
+
+    // 2. Language option selection
+    const langOption = e.target.closest('.lang-option');
+    if (langOption && langOption.dataset.lang) {
+      setLanguage(langOption.dataset.lang);
+      const menu = langOption.closest('.lang-dropdown-menu');
+      if (menu) menu.hidden = true;
+      const btn = langOption.closest('.lang-dropdown')?.querySelector('.lang-dropdown-btn');
+      if (btn) {
+        btn.setAttribute('aria-expanded', 'false');
+        btn.focus();
+      }
+      return;
+    }
+
+    // 3. Click outside closes dropdown
+    if (!e.target.closest('.lang-dropdown')) {
+      document.querySelectorAll('.lang-dropdown-menu').forEach((m) => { m.hidden = true; });
+      document.querySelectorAll('.lang-dropdown-btn').forEach((b) => { b.setAttribute('aria-expanded', 'false'); });
+    }
+
+    const toggleBtn = e.target.closest('.language-toggle, #language-toggle');
+    if (toggleBtn) {
+      setLanguage(language === 'th' ? 'en' : 'th');
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.lang-dropdown-menu').forEach((m) => { m.hidden = true; });
+      document.querySelectorAll('.lang-dropdown-btn').forEach((b) => { b.setAttribute('aria-expanded', 'false'); });
+    }
+  });
+
+  const menuToggle = document.querySelector('.mobile-menu-toggle');
+  const mobileNav = document.querySelector('#mobile-nav');
+  if (menuToggle && mobileNav) {
+    const toggleMenu = (open) => {
+      const isOpen = typeof open === 'boolean' ? open : mobileNav.hidden;
+      mobileNav.hidden = !isOpen;
+      menuToggle.setAttribute('aria-expanded', String(isOpen));
+      menuToggle.classList.toggle('is-active', isOpen);
+    };
+
+    menuToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleMenu();
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!mobileNav.hidden && !mobileNav.contains(e.target) && !menuToggle.contains(e.target)) {
+        toggleMenu(false);
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !mobileNav.hidden) {
+        toggleMenu(false);
+      }
+    });
+  }
+
   apply();
 })();

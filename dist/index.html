@@ -6,14 +6,103 @@
     <meta name="description" content="บีบอัดไฟล์เสียงในเบราว์เซอร์ โดยไม่อัปโหลดไฟล์ไปยังเซิร์ฟเวอร์" />
     <title>บีบเสียง — ทำงานในเครื่องคุณ</title>
     <link rel="icon" type="image/png" href="./assets/favicon.png?v=20260913" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <main class="shell" data-page="compressor">
-      <nav class="site-nav" data-i18n-aria-label="common.mainNav">
-        <a class="brand" href="./" data-i18n="common.brand">เสียงเล็ก</a>
-        <div class="nav-links"><a class="nav-link" href="./split/" data-i18n="common.split">แบ่งไฟล์</a><a class="nav-link" href="./transcribe/" data-i18n="common.transcribe">ถอดเสียงด้วย AI <span>→</span></a><button id="language-toggle" class="language-toggle" type="button">English</button></div>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="header-brand" href="./" data-i18n-title="common.brand">
+          <span class="brand-logo" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 10v4" />
+              <path d="M6 6v12" />
+              <path d="M10 3v18" />
+              <path d="M14 8v8" />
+              <path d="M18 5v14" />
+              <path d="M22 10v4" />
+            </svg>
+          </span>
+          <div class="brand-text">
+            <strong class="brand-title" data-i18n="common.brand">เสียงเล็ก</strong>
+            <span class="brand-badge" data-i18n="common.brandTagline">เครื่องมือเสียง</span>
+          </div>
+        </a>
+
+        <nav class="header-nav" aria-label="เมนูหลัก" data-i18n-aria-label="common.mainNav">
+          <a href="./" class="nav-item active" data-page-link="compressor">
+            <span class="nav-icon" aria-hidden="true">
+              <svg class="nav-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h6m0 0v6m0-6L3 21"/><path d="M20 10h-6m0 0V4m0 6l7-7"/></svg>
+            </span>
+            <span class="nav-label" data-i18n="common.compress">บีบเสียง</span>
+          </a>
+          <a href="./split/" class="nav-item" data-page-link="split">
+            <span class="nav-icon" aria-hidden="true">
+              <svg class="nav-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>
+            </span>
+            <span class="nav-label" data-i18n="common.split">แบ่งไฟล์</span>
+          </a>
+          <a href="./transcribe/" class="nav-item" data-page-link="transcribe">
+            <span class="nav-icon" aria-hidden="true">
+              <svg class="nav-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+            </span>
+            <span class="nav-label" data-i18n="common.transcribe">ถอดเสียงด้วย AI</span>
+          </a>
+        </nav>
+
+        <div class="header-actions">
+          <div class="header-status" title="อยู่ในอุปกรณ์นี้เท่านั้น" data-i18n-title="common.privacyLocal">
+            <span class="status-dot"></span>
+            <span class="status-text" data-i18n="common.badgeLocal">ในเครื่อง</span>
+          </div>
+          <div class="lang-dropdown">
+            <button id="lang-dropdown-btn" class="lang-dropdown-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="เลือกภาษา">
+              <span class="lang-globe" aria-hidden="true">
+                <svg class="lang-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              </span>
+              <span class="current-lang-text">TH</span>
+              <span class="dropdown-chevron" aria-hidden="true">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+              </span>
+            </button>
+            <div class="lang-dropdown-menu" role="menu" hidden>
+              <button type="button" class="lang-option active" role="menuitem" data-lang="th">
+                <span class="lang-option-text">ภาษาไทย</span>
+                <span class="lang-option-code">TH</span>
+                <span class="lang-check" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                </span>
+              </button>
+              <button type="button" class="lang-option" role="menuitem" data-lang="en">
+                <span class="lang-option-text">English</span>
+                <span class="lang-option-code">EN</span>
+                <span class="lang-check" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="mobile-tabs-bar" aria-label="เมนูหลักสำหรับมือถือ" data-i18n-aria-label="common.mainNav">
+        <a href="./" class="mobile-tab-btn active">
+          <svg class="nav-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h6m0 0v6m0-6L3 21"/><path d="M20 10h-6m0 0V4m0 6l7-7"/></svg>
+          <span data-i18n="common.compress">บีบเสียง</span>
+        </a>
+        <a href="./split/" class="mobile-tab-btn">
+          <svg class="nav-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>
+          <span data-i18n="common.split">แบ่งไฟล์</span>
+        </a>
+        <a href="./transcribe/" class="mobile-tab-btn">
+          <svg class="nav-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+          <span data-i18n="common.transcribe">ถอดเสียง AI</span>
+        </a>
       </nav>
+    </header>
+    <main class="shell" data-page="compressor">
       <header class="hero">
         <div class="hero-copy">
           <p class="eyebrow" data-i18n="compressor.eyebrow">AUDIO COMPRESSOR</p>
