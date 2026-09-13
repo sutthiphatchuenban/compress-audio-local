@@ -68,7 +68,11 @@ export default async function transcribe(request) {
       body: JSON.stringify({ contents: [{ parts: [{ fileData: { fileUri: uploadedFile.uri, mimeType } }] }], generationConfig: { audioTranscriptionConfig: { mode: 'SMART' } } }),
     });
     const payload = await geminiResponse.json().catch(() => ({}));
-    if (!geminiResponse.ok) { console.error('Gemini transcription failed', geminiResponse.status, payload?.error?.message); return json({ error: 'Google Gemini ไม่สามารถถอดเสียงได้ กรุณาลองใหม่อีกครั้ง' }, 502); }
+    if (!geminiResponse.ok) {
+      const message = payload?.error?.message || `บริการ Gemini ตอบกลับด้วยสถานะ ${geminiResponse.status}`;
+      console.error('Gemini transcription failed', geminiResponse.status, message);
+      return json({ error: `Google Gemini: ${message}` }, 502);
+    }
     const text = getTranscript(payload);
     if (!text) return json({ error: 'Google Gemini ไม่ได้คืนข้อความถอดเสียง ลองเลือกไฟล์ที่มีเสียงพูดชัดเจน' }, 502);
     return json({ text });
