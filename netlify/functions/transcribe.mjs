@@ -28,7 +28,7 @@ export default async function transcribe(request) {
     if (audio.size > MAX_FILE_BYTES) return json({ error: 'ไฟล์ใหญ่เกิน 4 MB' }, 413);
     const mimeType = mimeTypeFor(audio);
     const inlineAudio = Buffer.from(await audio.arrayBuffer()).toString('base64');
-    const geminiResponse = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent', {
+    const geminiResponse = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent', {
       method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
       body: JSON.stringify({
         contents: [{ parts: [

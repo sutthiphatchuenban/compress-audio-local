@@ -23,7 +23,7 @@
 
 ### ถอดเสียงด้วย AI
 
-หน้า [`/transcribe/`](https://compress-audio-local-nisio.netlify.app/transcribe/) ส่งไฟล์เสียงไปยัง Gemini 3.5 Flash-Lite ผ่าน Netlify Function เพื่อคืนข้อความถอดเสียง พร้อมคัดลอกหรือดาวน์โหลดเป็น Markdown
+หน้า [`/transcribe/`](https://compress-audio-local-nisio.netlify.app/transcribe/) ส่งไฟล์เสียงไปยัง `gemini-flash-lite-latest` ผ่าน Netlify Function เพื่อคืนข้อความถอดเสียง พร้อมคัดลอกหรือดาวน์โหลดเป็น Markdown
 
 - จำกัดไฟล์ที่ **4 MB** ทั้งที่หน้าเว็บและฝั่งฟังก์ชัน เพื่ออยู่ในขอบเขต payload ของ Netlify
 - แอปไม่มีฐานข้อมูลและไม่เก็บไฟล์เสียง แต่ไฟล์จะถูกส่งไปยัง Google Gemini ใน request เดียวเพื่อประมวลผล โดยไม่ใช้ Google Files API จึงไม่ใช่โหมด local-only
