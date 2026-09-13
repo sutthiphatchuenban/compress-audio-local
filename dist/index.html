@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="บีบอัดไฟล์เสียงในเบราว์เซอร์ โดยไม่อัปโหลดไฟล์ไปยังเซิร์ฟเวอร์" />
+    <title>บีบเสียง — ทำงานในเครื่องคุณ</title>
+    <link rel="icon" type="image/png" href="./assets/favicon.png" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">AUDIO COMPRESSOR</p>
+          <h1>บีบเสียงให้เล็ก<br /><span>โดยไม่ต้องอัปโหลด</span></h1>
+          <p class="intro">เปลี่ยนไฟล์เสียงขนาดใหญ่ให้เป็น M4A ที่เบาลง โดยทุกอย่างเกิดขึ้นในเบราว์เซอร์ของคุณ</p>
+          <div class="hero-points"><span>100% ในเครื่อง</span><span>ไม่ต้องสมัครสมาชิก</span></div>
+        </div>
+        <div class="hero-art" aria-hidden="true"><img src="./assets/audio-compression-hero.png" alt="" /></div>
+      </header>
+
+      <section class="workbench" aria-labelledby="compress-title">
+        <div class="section-heading">
+          <div>
+            <p class="step">01 — เลือกไฟล์</p>
+            <h2 id="compress-title">ไฟล์เสียงต้นฉบับ</h2>
+          </div>
+          <span class="local-badge"><i></i> อยู่ในอุปกรณ์นี้เท่านั้น</span>
+        </div>
+
+        <label id="drop-zone" class="drop-zone" for="audio-file">
+          <input id="audio-file" type="file" accept="audio/*,.m4a,.mp3,.wav,.aac,.ogg" />
+          <span class="drop-icon" aria-hidden="true">⇧</span>
+          <strong>เลือกไฟล์เสียง หรือลากมาวางที่นี่</strong>
+          <span>รองรับ M4A, MP3, WAV, AAC และ OGG</span>
+        </label>
+
+        <div id="file-card" class="file-card" hidden>
+          <div class="file-mark">♪</div>
+          <div class="file-info">
+            <strong id="file-name"></strong>
+            <span id="file-size"></span>
+          </div>
+          <button id="clear-file" type="button" class="text-button">เปลี่ยนไฟล์</button>
+        </div>
+
+        <div class="settings" aria-label="การตั้งค่าการบีบอัด">
+          <div>
+            <p class="step">02 — คุณภาพสำหรับเสียงพูด</p>
+            <h2>ตั้งค่าไฟล์ปลายทาง</h2>
+          </div>
+          <label>
+            บิตเรต
+            <select id="bitrate">
+              <option value="24">24 kbps — เล็กที่สุด</option>
+              <option value="32" selected>32 kbps — แนะนำ</option>
+              <option value="48">48 kbps — ชัดขึ้น</option>
+            </select>
+          </label>
+          <dl>
+            <div><dt>รูปแบบ</dt><dd>M4A / AAC</dd></div>
+            <div><dt>เสียง</dt><dd>Mono · 16 kHz</dd></div>
+          </dl>
+        </div>
+
+        <button id="compress-button" type="button" class="primary-button" disabled>
+          <span>บีบอัดไฟล์เสียง</span><b>→</b>
+        </button>
+
+        <div id="status-panel" class="status-panel" hidden aria-live="polite">
+          <div class="status-line"><span id="status-text">กำลังเตรียมตัวเข้ารหัส…</span><span id="status-percent">0%</span></div>
+          <div class="progress-track"><div id="progress-bar"></div></div>
+          <p id="status-note">ครั้งแรกจะโหลดตัวเข้ารหัสประมาณ 31 MB เพียงครั้งเดียว</p>
+        </div>
+
+        <div id="result-card" class="result-card" hidden>
+          <div class="result-copy">
+            <p class="step">เสร็จแล้ว</p>
+            <h2>ไฟล์พร้อมดาวน์โหลด</h2>
+            <p id="result-summary"></p>
+          </div>
+          <a id="download-link" class="download-button" download>ดาวน์โหลด M4A <span>↓</span></a>
+        </div>
+
+        <p id="error-message" class="error-message" role="alert" hidden></p>
+      </section>
+
+      <aside class="privacy-note">
+        <span>ความเป็นส่วนตัว</span>
+        <p>ไฟล์ถูกอ่านและบีบอัดภายในเบราว์เซอร์ของคุณเท่านั้น ไม่มีบัญชีผู้ใช้ ไม่มีฐานข้อมูล และไม่มีพื้นที่เก็บไฟล์บนเซิร์ฟเวอร์</p>
+      </aside>
+    </main>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
