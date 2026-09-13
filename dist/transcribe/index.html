@@ -57,7 +57,7 @@
         </div>
         <p id="transcribe-error" class="error-message" role="alert" hidden></p>
       </section>
-      <aside class="privacy-note remote-note"><span>ข้อมูลของคุณ</span><p>เว็บนี้ไม่มีฐานข้อมูลหรือพื้นที่เก็บไฟล์ ไฟล์ที่เลือกจะถูกส่งผ่าน Netlify ไปยัง Google Gemini เพื่อถอดเสียง และระบบสั่งลบไฟล์จาก Google ทันทีหลังประมวลผล ไฟล์ต้องไม่เกิน 4 MB เพื่อให้ส่งผ่านฟังก์ชันได้อย่างเสถียร</p></aside>
+      <aside class="privacy-note remote-note"><span>ข้อมูลของคุณ</span><p>เว็บนี้ไม่มีฐานข้อมูลหรือพื้นที่เก็บไฟล์ ไฟล์ที่เลือกจะถูกส่งผ่าน Netlify ไปยัง Google Gemini ใน request เดียวเพื่อถอดเสียง โดยไม่ใช้ Google Files API ไฟล์ต้องไม่เกิน 4 MB เพื่อให้ส่งผ่านฟังก์ชันได้อย่างเสถียร</p></aside>
     </main>
     <script type="module" src="./transcribe.js"></script>
   </body>
