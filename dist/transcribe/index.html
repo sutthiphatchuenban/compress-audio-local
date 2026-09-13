@@ -44,8 +44,9 @@
         </div>
         <button id="transcribe-button" type="button" class="primary-button" disabled><span>ถอดเสียงเป็นข้อความ</span><b>→</b></button>
         <div id="transcribe-status" class="status-panel" hidden aria-live="polite">
-          <div class="status-line"><span id="transcribe-status-text">กำลังส่งไฟล์อย่างปลอดภัย…</span><span class="pulse-dot" aria-hidden="true"></span></div>
-          <p id="transcribe-status-note">โดยทั่วไปใช้เวลาสั้น ๆ ตามความยาวของไฟล์</p>
+          <div class="status-line"><span id="transcribe-status-text">กำลังส่งไฟล์อย่างปลอดภัย…</span><span id="transcribe-status-percent">0%</span></div>
+          <div class="progress-track"><div id="transcribe-progress-bar" role="progressbar" aria-label="ความคืบหน้าการถอดเสียง" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div></div>
+          <p id="transcribe-status-note">ความคืบหน้าโดยประมาณระหว่างรอ Google Gemini ประมวลผล</p>
         </div>
         <div id="transcript-result" class="transcript-result" hidden>
           <div class="result-heading">

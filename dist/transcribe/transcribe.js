@@ -8,6 +8,8 @@ const clearButton = document.querySelector('#clear-transcribe-file');
 const transcribeButton = document.querySelector('#transcribe-button');
 const statusPanel = document.querySelector('#transcribe-status');
 const statusText = document.querySelector('#transcribe-status-text');
+const statusPercent = document.querySelector('#transcribe-status-percent');
+const progressBar = document.querySelector('#transcribe-progress-bar');
 const statusNote = document.querySelector('#transcribe-status-note');
 const result = document.querySelector('#transcript-result');
 const transcriptText = document.querySelector('#transcript-text');
@@ -16,6 +18,7 @@ const copyButton = document.querySelector('#copy-transcript');
 const downloadButton = document.querySelector('#download-transcript');
 let selectedFile = null;
 
+function setProgress(value, message) { const percent = Math.max(0, Math.min(100, Math.round(value))); progressBar.style.width = `${percent}%`; progressBar.setAttribute('aria-valuenow', String(percent)); statusPercent.textContent = `${percent}%`; if (message) statusText.textContent = message; }
 function formatBytes(bytes) { return `${(bytes / 1024 / 1024).toFixed(bytes < 1024 * 1024 ? 2 : 1)} MB`; }
 function showError(message) { errorMessage.textContent = message; errorMessage.hidden = false; }
 function clearError() { errorMessage.hidden = true; errorMessage.textContent = ''; }
@@ -34,16 +37,18 @@ clearButton.addEventListener('click', resetFile);
 dropZone.addEventListener('drop', (event) => selectFile(event.dataTransfer.files[0]));
 transcribeButton.addEventListener('click', async () => {
   if (!selectedFile) return;
-  clearError(); result.hidden = true; statusPanel.hidden = false; statusText.textContent = 'กำลังส่งไฟล์เพื่อถอดเสียง…'; statusNote.textContent = 'อย่าปิดหน้านี้จนกว่าจะได้ผลลัพธ์'; transcribeButton.disabled = true;
+  clearError(); result.hidden = true; statusPanel.hidden = false; setProgress(8, 'กำลังส่งไฟล์เพื่อถอดเสียง…'); statusNote.textContent = 'ความคืบหน้าโดยประมาณ อย่าปิดหน้านี้จนกว่าจะได้ผลลัพธ์'; transcribeButton.disabled = true;
+  let progress = 8;
+  const progressTimer = window.setInterval(() => { progress = Math.min(90, progress + (progress < 40 ? 8 : 3)); setProgress(progress, progress < 40 ? 'กำลังส่งไฟล์ไปยัง Gemini…' : 'Gemini กำลังถอดเสียง…'); }, 900);
   try {
     const data = new FormData(); data.append('audio', selectedFile, selectedFile.name);
     const response = await fetch('/.netlify/functions/transcribe', { method: 'POST', body: data });
     const payload = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(payload.error || 'ไม่สามารถถอดเสียงได้ในขณะนี้');
     if (!payload.text) throw new Error('ไม่ได้รับข้อความถอดเสียงจากบริการ');
-    transcriptText.textContent = payload.text.trim(); result.hidden = false; result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    window.clearInterval(progressTimer); setProgress(100, 'ถอดเสียงเสร็จแล้ว'); transcriptText.textContent = payload.text.trim(); result.hidden = false; result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   } catch (error) { showError(error.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
-  } finally { statusPanel.hidden = true; transcribeButton.disabled = !selectedFile; }
+  } finally { window.clearInterval(progressTimer); statusPanel.hidden = true; transcribeButton.disabled = !selectedFile; }
 });
 copyButton.addEventListener('click', async () => {
   const originalLabel = copyButton.textContent;
