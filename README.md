@@ -10,7 +10,8 @@
 
 ## ลองใช้งาน
 
-<https://compress-audio-local-nisio.netlify.app/>
+- **Vercel (Production)**: <https://compress-audio-local.vercel.app/>
+- **Netlify**: <https://compress-audio-local-nisio.netlify.app/>
 
 ![หน้าจอเว็บบีบเสียง](docs/ui-preview.png)
 
@@ -22,14 +23,14 @@
 
 ### แบ่งไฟล์เสียง
 
-หน้า [`/split/`](https://compress-audio-local-nisio.netlify.app/split/) ให้เลือกจำนวนส่วน 2–50 ไฟล์ ระบบจะแบ่งไฟล์ตามเวลาให้ใกล้เคียงกันและให้ดาวน์โหลดแต่ละส่วนได้ทันที เหมาะสำหรับแบ่งไฟล์ให้ต่ำกว่า 4 MB ก่อนนำไปถอดเสียง
+หน้า [`/split/`](https://compress-audio-local.vercel.app/split/) ให้เลือกจำนวนส่วน 2–50 ไฟล์ ระบบจะแบ่งไฟล์ตามเวลาให้ใกล้เคียงกันและให้ดาวน์โหลดแต่ละส่วนได้ทันที เหมาะสำหรับแบ่งไฟล์ให้ต่ำกว่า 4 MB ก่อนนำไปถอดเสียง
 
 - ไม่อัปโหลดไฟล์ และไม่มีการลดคุณภาพเพิ่ม เพราะใช้ codec เดิมของไฟล์ต้นฉบับ
 - หน้าเว็บจะแสดงขนาดโดยประมาณต่อส่วน เพื่อเลือกจำนวนไฟล์ได้ง่าย
 
 ### ถอดเสียงด้วย AI
 
-หน้า [`/transcribe/`](https://compress-audio-local-nisio.netlify.app/transcribe/) ส่งไฟล์เสียงไปยัง `gemini-flash-lite-latest` ผ่าน serverless function ของ Netlify หรือ Vercel เพื่อคืนข้อความถอดเสียง พร้อมคัดลอกหรือดาวน์โหลดเป็น Markdown
+หน้า [`/transcribe/`](https://compress-audio-local.vercel.app/transcribe/) ส่งไฟล์เสียงไปยัง `gemini-flash-lite-latest` ผ่าน serverless function ของ Netlify หรือ Vercel เพื่อคืนข้อความถอดเสียง พร้อมคัดลอกหรือดาวน์โหลดเป็น Markdown
 
 - จำกัดไฟล์ที่ **4 MB** ทั้งที่หน้าเว็บและฝั่งฟังก์ชัน เพื่ออยู่ในขอบเขต payload ของ Netlify
 - แอปไม่มีฐานข้อมูลและไม่เก็บไฟล์เสียง แต่ไฟล์จะถูกส่งไปยัง Google Gemini ใน request เดียวเพื่อประมวลผล โดยไม่ใช้ Google Files API จึงไม่ใช่โหมด local-only
@@ -70,6 +71,8 @@
 ## Deploy บน Vercel
 
 โปรเจกต์นี้รองรับ Vercel แล้ว โดยมี `vercel.json` ตั้งให้เผยแพร่ `dist` และมี Vercel Function ที่ `/api/transcribe` หน้าเว็บจะเลือก endpoint ของ Netlify หรือ Vercel ให้อัตโนมัติตามโดเมน และมี fallback เมื่อ endpoint หลักตอบกลับ 404
+
+- **Live URL บน Vercel**: <https://compress-audio-local.vercel.app/>
 
 1. Import repository นี้ใน Vercel หรืออัปโหลดโฟลเดอร์โปรเจกต์
 2. ตรวจว่า Output Directory เป็น `dist` (ไฟล์ `vercel.json` ตั้งค่าไว้ให้แล้ว)
