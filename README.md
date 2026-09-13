@@ -56,7 +56,7 @@
 
 1. Push โฟลเดอร์นี้ขึ้น GitHub
 2. สร้างไซต์ใหม่จาก repository ใน Netlify
-3. ใน **Project configuration → Environment variables** เพิ่ม `GEMINI_API_KEY` และสามารถเพิ่ม `GEMINI_API_KEY2` เป็นคีย์สำรองได้ (ห้ามใส่คีย์ไว้ในไฟล์หรือฝั่งเบราว์เซอร์) ระบบจะใช้คีย์แรกก่อน และสลับไปคีย์สำรองเมื่อเจอ quota หรือ error ชั่วคราว
+3. ใน **Project configuration → Environment variables** เพิ่ม `GEMINI_API_KEY` และสามารถเพิ่ม `GEMINI_API_KEY2` เป็นคีย์สำรองได้ (ดูตัวอย่างที่ `.env.example`; ห้ามใส่คีย์ไว้ในไฟล์หรือฝั่งเบราว์เซอร์) ระบบจะใช้คีย์แรกก่อน และสลับไปคีย์สำรองเมื่อเจอ quota หรือ error ชั่วคราว
 4. Netlify จะอ่าน `netlify.toml` เผยแพร่โฟลเดอร์ `dist` และ deploy ฟังก์ชันถอดเสียงอัตโนมัติ
 
 > หน้า `/transcribe/` ต้อง deploy ผ่าน Git repository เพื่อให้ Netlify Function ทำงาน; Netlify Drop ใช้ได้เฉพาะตัวบีบเสียงแบบ static
